@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uttpann - Personal Expense Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-right: 1px solid #eee;
+        }
+        
+        .output-section {
+            flex: 2;
+            min-width: 400px;
+            padding: 25px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #182848;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4b6cb7;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #4b6cb7;
+            outline: none;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn {
+            background: #4b6cb7;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            background: #3a5ca0;
+        }
+        
+        .btn-update {
+            background: #2ecc71;
+        }
+        
+        .btn-update:hover {
+            background: #27ae60;
+        }
+        
+        .btn-cancel {
+            background: #e67e22;
+            margin-top: 10px;
+        }
+        
+        .btn-cancel:hover {
+            background: #d35400;
+        }
+        
+        .btn-export {
+            background: #9b59b6;
+        }
+        
+        .btn-export:hover {
+            background: #8e44ad;
+        }
+        
+        .btn-import {
+            background: #1abc9c;
+        }
+        
+        .btn-import:hover {
+            background: #16a085;
+        }
+        
+        .transaction-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+        
+        .transaction-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .transaction-details {
+            flex: 1;
+        }
+        
+        .transaction-person {
+            font-weight: 600;
+            color: #182848;
+        }
+        
+        .transaction-amount.given {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .transaction-amount.received {
+            color: #2ecc71;
+            font-weight: 600;
+        }
+        
+        .transaction-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .edit-btn, .delete-btn {
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .edit-btn {
+            background: #3498db;
+        }
+        
+        .edit-btn:hover {
+            background: #2980b9;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+        }
+        
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+        
+        .calculation-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 5px solid #4b6cb7;
+        }
+        
+        .calculation-step {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .calculation-step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .net-amount {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #182848;
+            margin-top: 10px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #777;
+        }
+        
+        .import-export-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .import-export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .input-section {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .import-export-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Uttpann</h1>
+            <p class="tagline">Your Personal Expense & Loan Tracker</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">New Transaction</h2>
+                
+                <div class="form-group">
+                    <label for="personName">Person's Name</label>
+                    <input type="text" id="personName" placeholder="Enter person's name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="transactionDate">Date</label>
+                    <input type="date" id="transactionDate">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description (Optional)</label>
+                    <textarea id="description" rows="2" placeholder="Enter transaction details (optional)"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">Amount (₹)</label>
+                    <input type="number" id="amount" placeholder="Enter amount">
+                </div>
+                
+                <div class="form-group">
+                    <label>Transaction Type</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="given" name="type" value="given" checked>
+                            <label for="given">Maine Diye (I Gave)</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="received" name="type" value="received">
+                            <label for="received">Mujhe Mile (I Received)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="addTransaction" class="btn">Add Transaction</button>
+                <button id="updateTransaction" class="btn btn-update" style="display: none;">Update Transaction</button>
+                <button id="cancelEdit" class="btn btn-cancel" style="display: none;">Cancel Edit</button>
+                
+                <div class="import-export-section">
+                    <h2 class="section-title">Data Management</h2>
+                    <div class="import-export-buttons">
+                        <button id="exportBtn" class="btn btn-export">Export to Excel</button>
+                        <button id="importBtn" class="btn btn-import">Import from Excel</button>
+                        <input type="file" id="importFile" class="file-input" accept=".csv, .xlsx, .xls">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <h2 class="section-title">Transaction History</h2>
+                
+                <div class="transaction-list" id="transactionList">
+                    <div class="empty-state" id="emptyState">
+                        <p>No transactions yet. Add your first transaction to get started.</p>
+                    </div>
+                </div>
+                
+                <h2 class="section-title">Calculation</h2>
+                
+                <div class="calculation-box" id="calculationBox">
+                    <div class="empty-state">
+                        <p>Transactions will appear here after you add them.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('transactionDate').value = today;
+            
+            // Load transactions from localStorage
+            let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            let editingTransactionId = null;
+            
+            // Display transactions
+            updateTransactionList();
+            updateCalculation();
+            
+            // Add transaction event
+            document.getElementById('addTransaction').addEventListener('click', function() {
+                addTransaction();
+            });
+            
+            // Update transaction event
+            document.getElementById('updateTransaction').addEventListener('click', function() {
+                updateTransaction();
+            });
+            
+            // Cancel edit event
+            document.getElementById('cancelEdit').addEventListener('click', function() {
+                cancelEdit();
+            });
+            
+            // Export event
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                exportToExcel();
+            });
+            
+            // Import event
+            document.getElementById('importBtn').addEventListener('click', function() {
+                document.getElementById('importFile').click();
+            });
+            
+            document.getElementById('importFile').addEventListener('change', function(e) {
+                importFromExcel(e);
+            });
+            
+            function addTransaction() {
+                const personName = document.getElementById('personName').value.trim();
+                const date = document.getElementById('transactionDate').value;
+                const description = document.getElementById('description').value.trim();
+                const amount = parseFloat(document.getElementById('amount').value);
+                const type = document.querySelector('input[name="type"]:checked').value;
+                
+                if (!personName || !date || isNaN(amount) || amount <= 0) {
+                    alert('Please fill all required fields with valid values.');
+                    return;
+                }
+                
+                const transaction = {
+                    id: Date.now(),
+                    personName,
+                    date,
+                    description,
+                    amount,
+                    type
+                };
+                
+                transactions.push(transaction);
+                saveTransactions();
+                updateTransactionList();
+                updateCalculation();
+                
+                // Reset form
+                resetForm();
+            }
+            
+            function editTransaction(id) {
+                const transaction = transactions.find(t => t.id === id);
+                if (!transaction) return;
+                
+                // Fill form with transaction data
+                document.getElementById('personName').value = transaction.personName;
+                document.getElementById('transactionDate').value = transaction.date;
+                document.getElementById('description').value = transaction.description;
+                document.getElementById('amount').value = transaction.amount;
+                
+                if (transaction.type === 'given') {
+                    document.getElementById('given').checked = true;
+                } else {
+                    document.getElementById('received').checked = true;
+                }
+                
+                // Set editing mode
+                editingTransactionId = id;
+                document.getElementById('addTransaction').style.display = 'none';
+                document.getElementById('updateTransaction').style.display = 'block';
+                document.getElementById('cancelEdit').style.display = 'block';
+                
+                // Scroll to form
+                document.querySelector('.input-section').scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function updateTransaction() {
+                if (!editingTransactionId) return;
+                
+                const personName = document.getElementById('personName').value.trim();
+                const date = document.getElementById('transactionDate').value;
+                const description = document.getElementById('description').value.trim();
+                const amount = parseFloat(document.getElementById('amount').value);
+                const type = document.querySelector('input[name="type"]:checked').value;
+                
+                if (!personName || !date || isNaN(amount) || amount <= 0) {
+                    alert('Please fill all required fields with valid values.');
+                    return;
+                }
+                
+                // Find and update transaction
+                const transactionIndex = transactions.findIndex(t => t.id === editingTransactionId);
+                if (transactionIndex !== -1) {
+                    transactions[transactionIndex] = {
+                        id: editingTransactionId,
+                        personName,
+                        date,
+                        description,
+                        amount,
+                        type
+                    };
+                    
+                    saveTransactions();
+                    updateTransactionList();
+                    updateCalculation();
+                }
+                
+                // Reset form and exit edit mode
+                resetForm();
+                cancelEdit();
+            }
+            
+            function cancelEdit() {
+                editingTransactionId = null;
+                document.getElementById('addTransaction').style.display = 'block';
+                document.getElementById('updateTransaction').style.display = 'none';
+                document.getElementById('cancelEdit').style.display = 'none';
+                resetForm();
+            }
+            
+            function resetForm() {
+                document.getElementById('personName').value = '';
+                document.getElementById('transactionDate').value = today;
+                document.getElementById('description').value = '';
+                document.getElementById('amount').value = '';
+                document.getElementById('given').checked = true;
+                document.getElementById('personName').focus();
+            }
+            
+            function deleteTransaction(id) {
+                if (confirm('Are you sure you want to delete this transaction?')) {
+                    transactions = transactions.filter(transaction => transaction.id !== id);
+                    saveTransactions();
+                    updateTransactionList();
+                    updateCalculation();
+                    
+                    // If we're editing this transaction, cancel edit mode
+                    if (editingTransactionId === id) {
+                        cancelEdit();
+                    }
+                }
+            }
+            
+            function saveTransactions() {
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+            }
+            
+            function updateTransactionList() {
+                const transactionList = document.getElementById('transactionList');
+                const emptyState = document.getElementById('emptyState');
+                
+                if (transactions.length === 0) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                
+                // Sort transactions by date (newest first)
+                const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                transactionList.innerHTML = '';
+                
+                sortedTransactions.forEach(transaction => {
+                    const transactionItem = document.createElement('div');
+                    transactionItem.className = 'transaction-item';
+                    
+                    const dateObj = new Date(transaction.date);
+                    const formattedDate = dateObj.toLocaleDateString('en-IN');
+                    
+                    transactionItem.innerHTML = `
+                        <div class="transaction-details">
+                            <div class="transaction-person">${transaction.personName}</div>
+                            <div>${transaction.description || 'No description'}</div>
+                            <div style="font-size: 0.9rem; color: #666;">${formattedDate}</div>
+                        </div>
+                        <div class="transaction-amount ${transaction.type}">
+                            ${transaction.type === 'given' ? '-' : '+'}₹${transaction.amount.toLocaleString('en-IN')}
+                        </div>
+                        <div class="transaction-actions">
+                            <button class="edit-btn" onclick="editTransaction(${transaction.id})">Edit</button>
+                            <button class="delete-btn" onclick="deleteTransaction(${transaction.id})">Delete</button>
+                        </div>
+                    `;
+                    
+                    transactionList.appendChild(transactionItem);
+                });
+            }
+            
+            function updateCalculation() {
+                const calculationBox = document.getElementById('calculationBox');
+                
+                if (transactions.length === 0) {
+                    calculationBox.innerHTML = `
+                        <div class="empty-state">
+                            <p>Transactions will appear here after you add them.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Group transactions by person
+                const people = {};
+                
+                transactions.forEach(transaction => {
+                    if (!people[transaction.personName]) {
+                        people[transaction.personName] = {
+                            given: 0,
+                            received: 0
+                        };
+                    }
+                    
+                    if (transaction.type === 'given') {
+                        people[transaction.personName].given += transaction.amount;
+                    } else {
+                        people[transaction.personName].received += transaction.amount;
+                    }
+                });
+                
+                let calculationHTML = '';
+                
+                for (const person in people) {
+                    const data = people[person];
+                    const netAmount = data.given - data.received;
+                    
+                    calculationHTML += `
+                        <div class="calculation-step">
+                            <h3>${person}</h3>
+                            <div>Total Maine Diye: ₹${data.given.toLocaleString('en-IN')}</div>
+                            <div>Total Mujhe Mile: ₹${data.received.toLocaleString('en-IN')}</div>
+                            <div>Antar (Difference): ₹${data.given.toLocaleString('en-IN')} - ₹${data.received.toLocaleString('en-IN')} = ₹${Math.abs(netAmount).toLocaleString('en-IN')}</div>
+                            <div class="net-amount">Net Amount: ₹${Math.abs(netAmount).toLocaleString('en-IN')}</div>
+                        </div>
+                    `;
+                }
+                
+                calculationBox.innerHTML = calculationHTML;
+            }
+            
+            function exportToExcel() {
+                if (transactions.length === 0) {
+                    alert('No transactions to export.');
+                    return;
+                }
+                
+                // Create CSV content
+                let csvContent = "ID,Person Name,Date,Description,Amount,Type\n";
+                
+                transactions.forEach(transaction => {
+                    csvContent += `${transaction.id},"${transaction.personName}","${transaction.date}","${transaction.description || ''}",${transaction.amount},${transaction.type}\n`;
+                });
+                
+                // Create and download the file
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute("href", url);
+                link.setAttribute("download", `expense_tracker_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            function importFromExcel(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const csvContent = e.target.result;
+                        const lines = csvContent.split('\n');
+                        const importedTransactions = [];
+                        
+                        // Skip header line
+                        for (let i = 1; i < lines.length; i++) {
+                            const line = lines[i].trim();
+                            if (!line) continue;
+                            
+                            // Simple CSV parsing (this may need enhancement for complex cases)
+                            const parts = line.split(',');
+                            if (parts.length < 6) continue;
+                            
+                            // Extract values, handling quoted fields
+                            let id = parts[0];
+                            let personName = parts[1].replace(/^"|"$/g, '');
+                            let date = parts[2].replace(/^"|"$/g, '');
+                            let description = parts[3].replace(/^"|"$/g, '');
+                            let amount = parseFloat(parts[4]);
+                            let type = parts[5].replace(/^"|"$/g, '');
+                            
+                            // Validate required fields
+                            if (!personName || !date || isNaN(amount)) {
+                                console.warn('Skipping invalid transaction:', line);
+                                continue;
+                            }
+                            
+                            // Use existing ID if available, otherwise generate new one
+                            const transactionId = id && !isNaN(id) ? parseInt(id) : Date.now() + i;
+                            
+                            importedTransactions.push({
+                                id: transactionId,
+                                personName,
+                                date,
+                                description,
+                                amount,
+                                type
+                            });
+                        }
+                        
+                        if (importedTransactions.length === 0) {
+                            alert('No valid transactions found in the file.');
+                            return;
+                        }
+                        
+                        // Ask user if they want to replace or append
+                        const replace = confirm(`Found ${importedTransactions.length} transactions. Click OK to replace all current transactions, or Cancel to add them to existing ones.`);
+                        
+                        if (replace) {
+                            transactions = importedTransactions;
+                        } else {
+                            // Append and avoid duplicates by ID
+                            const existingIds = new Set(transactions.map(t => t.id));
+                            importedTransactions.forEach(transaction => {
+                                if (!existingIds.has(transaction.id)) {
+                                    transactions.push(transaction);
+                                }
+                            });
+                        }
+                        
+                        saveTransactions();
+                        updateTransactionList();
+                        updateCalculation();
+                        
+                        alert(`Successfully imported ${importedTransactions.length} transactions.`);
+                        
+                        // Reset file input
+                        document.getElementById('importFile').value = '';
+                    } catch (error) {
+                        console.error('Error importing file:', error);
+                        alert('Error importing file. Please make sure it is a valid CSV file.');
+                    }
+                };
+                
+                reader.readAsText(file);
+            }
+            
+            // Make functions available globally for onclick
+            window.editTransaction = editTransaction;
+            window.deleteTransaction = deleteTransaction;
+        });
+    </script>
+</body>
+</html>
